@@ -1,3 +1,4 @@
+# this program to create Master File in connection with accounting software
 import tkinter as tk
 from  tkinter import *
 
