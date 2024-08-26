@@ -10,7 +10,7 @@ conn=mysql.connector.connect(
     passwd="Milan@2000",
     database='accounts')
 c=conn.cursor()
-c.execute("SELECT * FROM  master")
+c.execute("SELECT acc_name FROM  master")
 results = c.fetchall()
 #selected = StringVar()
 
@@ -20,6 +20,7 @@ class Master:
         self.group_name = group_name
         self.op_bal = op_bal
         self.dr_cr = dr_cr
+
 
 
 def do_Save(*arg):
@@ -39,7 +40,8 @@ def do_Save(*arg):
        mop_bal = float()
    if mgroup_name == "":
        mlevel = 1
-
+   else:
+       mlevel = 2
    mdr_cr = dr_cr.get()
    master_data = (macc_name, mgroup_name, mop_bal,mdr_cr,mlevel)
    mysql_insert_query = ("INSERT INTO master(acc_name,group_name,op_bal,dr_cr,level) VALUES(%s,%s,%s,%s,%s)")
