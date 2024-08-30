@@ -1,4 +1,6 @@
 # this program to create Master File in connection with accounting software
+#program finished on 30.08.24
+# column 3rd level * child fields not finished
 import tkinter as tk
 from  tkinter import *
 
