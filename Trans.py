@@ -4,8 +4,9 @@
 
 import tkinter as tk
 from  tkinter import *
-
 from tkinter import ttk
+
+
 import mysql.connector
 global mgroup_code
 conn=mysql.connector.connect(
@@ -87,21 +88,32 @@ def my_upd(*args):
  #   print(mgroup_code)
 
 master = tk.Tk()
-master.geometry("650x150")
+master.geometry("700x400")
+master.title("CASH PAYMENT",)
 frame0=Frame(master)
 frame0.grid()
-tk.Label(frame0, text="CASH PAYMENT",font=('Ariel',14),background="blue",fg="white").pack() # grid(row=0 ,column=0)
-tk.Label(frame0, text="Doc.No.",font=('Ariel', 14)).pack(anchor="w").grid(row=0,column=1)
-doc_no = tk.Entry(master, width=6, font=('Ariel', 14)).grid(row=0,column=1)
-"""
-tk.Label(master, text="Doc.Date",font=('Ariel',14)).grid(row=1,column=2)
-doc_no = tk.Entry(master, width=10, font=('Ariel', 14))
-doc_no.grid(row=1, column=3)
-#tk.Label(master, text="Select Head of Account",font=('Ariel',14)).grid(row=1,column=0)
-#tk.Label(master, text="Account",font=('Ariel',14)).grid(row=1,column=1)
-"""
-frame1 = Frame(master)
-frame1.grid()
+label_Color = "Blue"
+Label(master, text="CASH PAYMENT",font=('Ariel',14),fg=label_Color).place(x=275,y=0)
+
+Label(master, text="Doc.No.",font=('Ariel',14),fg=label_Color).place(x=5,y=35)
+doc_No = tk.Entry(master,  font=('Ariel', 14),width=10).place(x=80,y=35)
+Label(master, text="Date :",font=('Ariel',14),fg=label_Color).place(x=506,y=35)
+doc_Date = tk.Entry(master,  font=('Ariel', 14),width=10).place(x=580,y=35)
+
+Label(master, text="Account Head",font=('Ariel',14),fg=label_Color).place(y=75,x=50)
+acc_Name_Ledger = tk.Entry(master,  font=('Ariel', 14),width=35).place(y=100,x=20)
+Label(master, text="Amount",font=('Ariel',14),fg=label_Color).place(y=75,x=580)
+ledger_Amount = tk.Entry(master,  font=('Ariel', 14),width=15).place(y=100,x=520)
+
+acc_Name_Ledger = tk.Entry(master,  font=('Ariel', 14),width=35).place(y=130,x=20)
+ledger_Amount = tk.Entry(master,  font=('Ariel', 14),width=15).place(y=130,x=520)
+
+
+
+
+
+
+
 mgroup_code =0
 
 
@@ -122,12 +134,13 @@ sel = tk.StringVar()
 #dr_cr.grid(row=2,column=2)
 #sel.trace('w',my_upd)
 #obj = Master(acc_name,group_name,mgroup_code,opn_bal,dr_cr)
-b1=tk.Button(frame1,text='OK'   ,font=('Ariel',14),command=do_Save)
-b2=tk.Button(frame1,text='RESET',font=('Ariel',14),command=lambda : do_Reset())
-b3=tk.Button(frame1,text='QUIT' ,font=('Ariel',14),command=lambda : do_Exit())
 
-b1.grid(row=6,column=0)
-b2.grid(row=6,column=1)
-b3.grid(row=6,column=2)
+b1=tk.Button(master,text='OK'   ,font=('Ariel',14),fg=label_Color,padx=20,command=do_Save)
+b2=tk.Button(master,text='RESET',font=('Ariel',14),fg=label_Color,padx=20,command=lambda : do_Reset())
+b3=tk.Button(master,text='QUIT' ,font=('Ariel',14),fg=label_Color,padx=20,command=lambda : do_Exit())
+
+b1.place(y=300,x=100)
+b2.place(y=300,x=250)
+b3.place(y=300,x=400)
 
 master.mainloop()
