@@ -1,146 +1,169 @@
 # this program to create Transaction file (Cash Payment) File in connection with accounting software
 #program started  on 30.08.24
 # tables required transaction & Master
-
 import tkinter as tk
-from  tkinter import *
+
+from tkinter import *
+
 from tkinter import ttk
 
+from tkinter.ttk import Label, LabelFrame
 
 import mysql.connector
-global mgroup_code
-conn=mysql.connector.connect(
+
+conn = mysql.connector.connect(
     host='localhost',
     user='root',
     passwd="Milan@2000",
     database='accounts')
-c=conn.cursor()
-
+c = conn.cursor()
+c1 = conn.cursor()
+c2 = conn.cursor()
+c3 = conn.cursor()
+c2.execute("CREATE TABLE IF NOT EXISTS Transanction(doc_date VARCHAR(8),doc_no INT(5),acc_code INT(5)  ,"
+          "acc_name VARCHAR(35), ledger_amount FLOAT(12,2),dr_cr VARCHAR(2)) ")
 conn.commit()
-c.execute("SELECT acc_name FROM  master")
-results = c.fetchall()
-my_list = results
-my_dict ={}
-for row in results:
-    my_dict [[row][0][0]]= row
-#print(my_dict)
-class Master:
-    def __init__(self,acc_name,group_name,group_code,op_bal,dr_cr):
-        self.acc_name = acc_name
-        self.group_name = group_name
-        self.op_bal = op_bal
-        self.dr_cr = dr_cr
 
-def do_Save(*arg):
-   # pass
+# This section for  Cash or  Bank head Selection
+options = []
 
-    c.execute("CREATE TABLE IF NOT EXISTS Master(acc_code INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY ,"
-             "acc_name VARCHAR(35),group_name VARCHAR(35),group_code INT(5), op_bal FLOAT(12,2),dr_cr VARCHAR(2), "
-             "level INT(2), child INT(1) ) ")
-    conn.commit()
-    print("Master table successfully created")
-    macc_name = acc_name.get()
-    mgroup_name = group_name.get()
-    mop_bal =opn_bal.get()
+c.execute("SELECT acc_code,acc_name FROM  master WHERE level = 2 AND group_code =1 AND acc_name <>'Bank Accounts'")
+display_Cash_Bank = c.fetchall() # display cash & Banks head only
+for i in display_Cash_Bank:
+    options.append(str(i[1]))
 
 
-    if mop_bal  == "":
-       mop_bal = float()
-       mdr_cr = 0
-    if mgroup_name == "":
-       mlevel = 1
-    else:
 
-       mlevel = 2
-       mdr_cr = dr_cr.get()
-    #   mgroup = mgroup_name.split(" ")
-     #  print(mgroup+"df")
-     #  mgroup_code = mgroup
-      # print(mgroup_code+"SDF")
-    master_data = (mgroup_code,mgroup_name,macc_name,mop_bal,mdr_cr,mlevel)
-    mysql_insert_query = ("INSERT INTO master(group_code,group_name,acc_name,op_bal,dr_cr,level) VALUES(%s,%s,%s,%s,%s,%s)")
-    print(master_data)
-    c.execute(mysql_insert_query,master_data)
-    conn.commit()
-    print("Record successfully insert into Master table")
-    do_Reset()
+master = tk.Tk()
+master.geometry("700x300")
+master.title("Home Expenses", )
+# This varibles for Cash/Bank master file storing
+macc_code =  StringVar()
+macc_name = StringVar()
+mdoc_No   =  StringVar()
+mdoc_Date = StringVar()
+mdr_cr = StringVar()
+
+# This varibles for Ledger Head  from master file storing
+macc_code1 =  StringVar()
+macc_name1 = StringVar()
+mdr_cr1    = StringVar()
+mledger_amount = StringVar()
+def lookup_Cash_Bank(event):
+    global macc_code,mdr_cr,macc_name
+    cash_Bank_Name = acc_name.get()
+    #query = "SELECT *FROM master"
+    query = "SELECT * FROM master WHERE acc_name = %s"
+    c3.execute(query,(cash_Bank_Name,))
+
+
+    for i in rows:
+        macc_code=i[0]
+        macc_name=i[1]
+        mdr_cr = i[5]  # based master database sequence
+
+#This section for select all ledger heads
+options1 = []
+c1 = conn.cursor()
+c1.execute("SELECT acc_name FROM  master WHERE group_code = 3")
+display_Ledger = c1.fetchall()
+for i in display_Ledger:
+    options1.append(str(i[0]))
+
+def lookup_ledger(event):
+    global macc_code1, mdr_cr1,macc_name1,mledger_amount
+    ledger_Name = acc_name1.get()
+    c4 = conn.cursor()
+    query = "SELECT * FROM master WHERE acc_name = %s"
+    c4.execute(query, (ledger_Name,))
+    rows = c4.fetchall()
+    print(rows)
+    for i in rows:
+        macc_code1 = i[0]
+        macc_name1 = i[1]
+        mdr_cr1    = "Cr"
 
 def do_Exit():
     quit()
 
+def do_Save():
+
+    mdoc_No = doc_No.get()
+    mdoc_Date = doc_Date.get()
+    mledger_amount = ledger_Amount.get()
+    # database insert with Cash book details  (first attempt)
+    master_data = (mdoc_No,mdoc_Date,macc_code,macc_name,mledger_amount,mdr_cr)
+    print(master_data)
+    mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_amount,dr_cr) VALUES(%s,%s,%s,%s,%s,%s)")
+    c.execute(mysql_insert_query,master_data)
+    conn.commit()
+
+    #dabase insert with Leadger head details (2nd attempt)
+    master_data = (mdoc_No,mdoc_Date,macc_code1,macc_name1,mledger_amount,"Cr")
+    print(master_data)
+    mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_amount,dr_cr) VALUES(%s,%s,%s,%s,%s,%s)")
+    c.execute(mysql_insert_query,master_data)
+    conn.commit()
+    print("Record successfully insert into Transaction  table")
+    do_Reset()
+
 def do_Reset():
+    doc_No.delete(0,END)
+    doc_Date.delete(0,END)
+    macc_code = ""
     acc_name.delete(0,END)
-    group_name.delete(0,END)
-    opn_bal.delete(0, END)
-    dr_cr.delete(0,END)
-    acc_name.focus()
-def my_upd(*args):
-    global mgroup_code
-    query="SELECT acc_code,acc_name FROM  master"
-    my_data = c.execute(query)
-    results = c.fetchall()
-    my_list = results
+    mdr_cr = ""
+    macc_code1=""
+    acc_name1.delete(0, END)
+    mdr_cr1= ""
+    ledger_Amount.delete(0, END)
+    doc_No.focus()
 
-   # print(sel.get())
-    for row in results:
-        if row[1]== sel.get():
-            mgroup_code = row[0]
- #   print(mgroup_code)
 
-master = tk.Tk()
-master.geometry("700x400")
-master.title("CASH PAYMENT",)
-frame0=Frame(master)
-frame0.grid()
 label_Color = "Blue"
-Label(master, text="CASH PAYMENT",font=('Ariel',14),fg=label_Color).place(x=275,y=0)
-
-Label(master, text="Doc.No.",font=('Ariel',14),fg=label_Color).place(x=5,y=35)
-doc_No = tk.Entry(master,  font=('Ariel', 14),width=10).place(x=80,y=35)
-Label(master, text="Date :",font=('Ariel',14),fg=label_Color).place(x=506,y=35)
-doc_Date = tk.Entry(master,  font=('Ariel', 14),width=10).place(x=580,y=35)
-
-Label(master, text="Account Head",font=('Ariel',14),fg=label_Color).place(y=75,x=50)
-acc_Name_Ledger = tk.Entry(master,  font=('Ariel', 14),width=35).place(y=100,x=20)
-Label(master, text="Amount",font=('Ariel',14),fg=label_Color).place(y=75,x=580)
-ledger_Amount = tk.Entry(master,  font=('Ariel', 14),width=15).place(y=100,x=520)
-
-acc_Name_Ledger = tk.Entry(master,  font=('Ariel', 14),width=35).place(y=130,x=20)
-ledger_Amount = tk.Entry(master,  font=('Ariel', 14),width=15).place(y=130,x=520)
+label_frame0 = tk.LabelFrame(master, text="CASH PAYMENT", font=('Cooper Black',18,'italic') ,height=125,width=700,labelanchor='n' )
+label_frame0.pack(padx=5,pady=5)
+Label(label_frame0, text="Doc.No.", font=('Ariel', 14),foreground='Blue').place(x=5, y=15)
+Label(label_frame0, text="Date :" , font=('Ariel', 14),foreground='Blue').place(x=506, y=15)
+Label(label_frame0, text="Cash/Bank", font=('Ariel', 14),foreground='Blue').place(x=5, y=50)
 
 
+doc_No = Entry(label_frame0, font=('Ariel', 14),width=10)
+doc_No.place(x=110,y=15)
+doc_Date = Entry(label_frame0, font=('Ariel', 14),width=10)
+doc_Date.place(x=568,y=15)
+sel1 = tk.StringVar()
+acc_name = ttk.Combobox(label_frame0,values=options,textvariable=sel1,font=('Ariel', 14),width=25)
+(acc_name.place(y=50,x=110))
 
+""" place without next line; bind showing nontype error
+"""
+acc_name.bind('<<ComboboxSelected>>', lookup_Cash_Bank)
 
-
-
-
-mgroup_code =0
-
+label_frame1 = tk.LabelFrame(master, text="ACCOUNT HEAD.........................................................................................      AMOUNT", font=('Cooper Black',10,'italic') ,height=100,width=700,labelanchor='n' )
+label_frame1.pack(padx=5,pady=5)
 
 
 
-box_value = tk.StringVar()
 sel = tk.StringVar()
 
+acc_name1 = ttk.Combobox(label_frame1,values = options1,textvariable=sel,font=('Ariel', 14),width=39)
+acc_name1.place(y=20,x=20)
+acc_name1.bind('<<ComboboxSelected>>', lookup_ledger)
+ledger_Amount = Entry(label_frame1, font=('Ariel', 14),width=15,justify='right')
+ledger_Amount.place(x=475,y=20)
 
-#acc_name = tk.Entry(master, width=30, font=('Ariel', 14))
-#group_name = ttk.Combobox(master,values = my_list,textvariable=sel)
-#opn_bal =  tk.Entry(master, width=12, font=('Ariel', 14),justify=RIGHT)
-#dr_cr = ttk.Combobox(master,textvariable=box_value,values=["","Dr","Cr"] ,width=10,font=('Ariel',14))
 
-#acc_name.grid(row=0, column=1)
-#group_name.grid(row=1, column=1)
-#opn_bal.grid(row=2, column=1)
-#dr_cr.grid(row=2,column=2)
-#sel.trace('w',my_upd)
-#obj = Master(acc_name,group_name,mgroup_code,opn_bal,dr_cr)
 
-b1=tk.Button(master,text='OK'   ,font=('Ariel',14),fg=label_Color,padx=20,command=do_Save)
-b2=tk.Button(master,text='RESET',font=('Ariel',14),fg=label_Color,padx=20,command=lambda : do_Reset())
-b3=tk.Button(master,text='QUIT' ,font=('Ariel',14),fg=label_Color,padx=20,command=lambda : do_Exit())
 
-b1.place(y=300,x=100)
-b2.place(y=300,x=250)
-b3.place(y=300,x=400)
+label_frame2 = tk.LabelFrame(master, height=80,width=700,labelanchor='n' )
+label_frame2.pack(padx=5,pady=5)
+b1 = tk.Button(master, text='OK', font=('Ariel', 14), fg=label_Color, padx=20, command=do_Save )
+b2 = tk.Button(master, text='RESET', font=('Ariel', 14), fg=label_Color, padx=20, command=lambda: do_Reset())
+b3 = tk.Button(master, text='QUIT', font=('Ariel', 14), fg=label_Color, padx=20, command=lambda: do_Exit())
+
+b1.place(y=250, x=100)
+b2.place(y=250, x=250)
+b3.place(y=250, x=400)
 
 master.mainloop()
