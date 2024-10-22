@@ -32,8 +32,10 @@ for p in data1:
     data.append(p)
 print(data)
 total_amount = sum(row[3] for row in data[1:])
-data.append(['','','Total =',round(total_amount,2)])
+data.append([' ','','Total =',round(total_amount,2)])
+
 table = Table(data)
+
 elements.append(table)
 pdf.build(elements)
 

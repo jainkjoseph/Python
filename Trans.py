@@ -20,7 +20,7 @@ c = conn.cursor()
 c1 = conn.cursor()
 c2 = conn.cursor()
 c3 = conn.cursor()
-c2.execute("CREATE TABLE IF NOT EXISTS Transanction(doc_date VARCHAR(8),doc_no INT(5),acc_code INT(5)  ,"
+c2.execute("CREATE TABLE IF NOT EXISTS Transanction(doc_date VARCHAR(10),doc_no INT(5),acc_code INT(5)  ,"
           "acc_name VARCHAR(35), ledger_amount FLOAT(12,2),dr_cr VARCHAR(2)) ")
 conn.commit()
 
@@ -55,7 +55,7 @@ def lookup_Cash_Bank(event):
     #query = "SELECT *FROM master"
     query = "SELECT * FROM master WHERE acc_name = %s"
     c3.execute(query,(cash_Bank_Name,))
-
+    rows = c3.fetchall()
 
     for i in rows:
         macc_code=i[0]
