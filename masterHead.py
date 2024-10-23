@@ -24,8 +24,23 @@ c.execute("CREATE TABLE IF NOT EXISTS Master(acc_code INT(5) NOT NULL AUTO_INCRE
           "acc_name VARCHAR(35),group_name VARCHAR(35),group_code INT(5), op_bal FLOAT(12,2),dr_cr VARCHAR(2), "
           "level INT(2), child INT(1) ) ")
 conn.commit()
+""" number_of_rows= c.execute("SELECT * FROM master")
+if not number_of_rows:
+    print(number_of_rows)
+    INSERT INTO masters(acc_code,Acc_name,level) VALUES(1,"ASSETS",1)
+    INSERT INTO masters(acc_code,Acc_name,level) VALUES(2,"LIABILITIES",1)
+    INSERT INTO masters(acc_code,Acc_name,level) VALUES(3,"EXPENSES",1)
+    INSERT INTO masters(acc_code,Acc_name,level) VALUES(4,"INCOME",1)
+    
+    INSERT INTO masters(acc_code,Acc_name,level,group_code,group_name) VALUES(5,"Cash Book",2,1,"ASSETS")
+    INSERT INTO masters(acc_code,Acc_name,level,group_code,group_name) VALUES(6,"BANK ACCOUNTS",2,1,"ASSETS")
+    INSERT INTO masters(acc_code,Acc_name,level,group_code,group_name) VALUES(7,"SUNDRY CREDITORS",2,1,"ASSETS")
+    INSERT INTO masters(acc_code,Acc_name,level,group_code,group_name) VALUES(8,"SUNDRY DEBTORS",2,2,"LISBILITIES")
+    
+"""
 c.execute("SELECT acc_name FROM  master")
 results = c.fetchall()
+#print(results)
 my_list = results
 my_dict ={}
 for row in results:
