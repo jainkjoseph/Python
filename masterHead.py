@@ -24,23 +24,24 @@ c.execute("CREATE TABLE IF NOT EXISTS Master(acc_code INT(5) NOT NULL AUTO_INCRE
           "acc_name VARCHAR(35),group_name VARCHAR(35),group_code INT(5), op_bal FLOAT(12,2),dr_cr VARCHAR(2), "
           "level INT(2), child INT(1) ) ")
 conn.commit()
-""" number_of_rows= c.execute("SELECT * FROM master")
-if not number_of_rows:
-    print(number_of_rows)
-    INSERT INTO masters(acc_code,Acc_name,level) VALUES(1,"ASSETS",1)
-    INSERT INTO masters(acc_code,Acc_name,level) VALUES(2,"LIABILITIES",1)
-    INSERT INTO masters(acc_code,Acc_name,level) VALUES(3,"EXPENSES",1)
-    INSERT INTO masters(acc_code,Acc_name,level) VALUES(4,"INCOME",1)
-    
-    INSERT INTO masters(acc_code,Acc_name,level,group_code,group_name) VALUES(5,"Cash Book",2,1,"ASSETS")
-    INSERT INTO masters(acc_code,Acc_name,level,group_code,group_name) VALUES(6,"BANK ACCOUNTS",2,1,"ASSETS")
-    INSERT INTO masters(acc_code,Acc_name,level,group_code,group_name) VALUES(7,"SUNDRY CREDITORS",2,1,"ASSETS")
-    INSERT INTO masters(acc_code,Acc_name,level,group_code,group_name) VALUES(8,"SUNDRY DEBTORS",2,2,"LISBILITIES")
-    
-"""
-c.execute("SELECT acc_name FROM  master")
+
+mtext =[("ASSETS",1),("LIABILITIES",1),("EXPENSES",1),
+        ("INCOME",1),
+        ("CASH BOOK",1),
+        ("BANK ACCOUNTS",1),
+        ("SUNDRY DEBTORS",1),
+        ("SNDRY CREDITORS",1)]
+
+master_data = (mtext)
+print(master_data)
+mysql_insert_query = "INSERT INTO master(acc_name,level) VALUES (%s,%s)"
+
+c.executemany(mysql_insert_query, master_data)
+conn.commit()
+
+
+c.execute("SELECT acc_name FROM  master WHERE acc_name IS NOT NULL")
 results = c.fetchall()
-#print(results)
 my_list = results
 my_dict ={}
 for row in results:
@@ -73,6 +74,7 @@ def do_Save(*arg):
     print(master_data)
     c.execute(mysql_insert_query,master_data)
     conn.commit()
+
     print("Record successfully insert into Master table")
     do_Reset()
 
