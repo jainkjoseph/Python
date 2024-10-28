@@ -1,7 +1,7 @@
 # this program to create Master File in connection with accounting software
 #program finished on 30.08.24
 # column 3rd level * child fields not finished
-
+#before running this program install mysql and database name is accounts  and table is master
 import tkinter as tk
 
 from  tkinter import *
@@ -24,21 +24,18 @@ c.execute("CREATE TABLE IF NOT EXISTS Master(acc_code INT(5) NOT NULL AUTO_INCRE
           "acc_name VARCHAR(35),group_name VARCHAR(35),group_code INT(5), op_bal FLOAT(12,2),dr_cr VARCHAR(2), "
           "level INT(2), child INT(1) ) ")
 conn.commit()
-
-mtext =[("ASSETS",1),("LIABILITIES",1),("EXPENSES",1),
-        ("INCOME",1),
-        ("CASH BOOK",1),
-        ("BANK ACCOUNTS",1),
-        ("SUNDRY DEBTORS",1),
-        ("SNDRY CREDITORS",1)]
+//default  head filed creations
+mtext =[("ASSETS",1,3,0,""),("LIABILITIES",1,1,0,""),("EXPENSES",1,0,0,""),("INCOME",1,0,0,""),
+        ("CASH BOOK",2,0,1,"ASSETS"),
+        ("BANK ACCOUNTS",2,0,1,"ASSETS"),
+        ("SUNDRY DEBTORS",2,0,2,"LIABILITIES"),
+        ("SUNDRY CREDITORS",2,0,1,"ASSETS")]
 
 master_data = (mtext)
-print(master_data)
-mysql_insert_query = "INSERT INTO master(acc_name,level) VALUES (%s,%s)"
+mysql_insert_query = "INSERT INTO master(acc_name,level,child,group_code,group_name) VALUES (%s,%s,%s,%s,%s)"
 
 c.executemany(mysql_insert_query, master_data)
 conn.commit()
-
 
 c.execute("SELECT acc_name FROM  master WHERE acc_name IS NOT NULL")
 results = c.fetchall()
