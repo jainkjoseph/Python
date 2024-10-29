@@ -15,7 +15,7 @@ global mgroup_code
 conn=mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="Milan@2000",
+    passwd="",
     database='accounts')
 c=conn.cursor()
 #c.conn.cursor()
@@ -24,25 +24,35 @@ c.execute("CREATE TABLE IF NOT EXISTS Master(acc_code INT(5) NOT NULL AUTO_INCRE
           "acc_name VARCHAR(35),group_name VARCHAR(35),group_code INT(5), op_bal FLOAT(12,2),dr_cr VARCHAR(2), "
           "level INT(2), child INT(1) ) ")
 conn.commit()
-//default  head filed creations
-mtext =[("ASSETS",1,3,0,""),("LIABILITIES",1,1,0,""),("EXPENSES",1,0,0,""),("INCOME",1,0,0,""),
-        ("CASH BOOK",2,0,1,"ASSETS"),
-        ("BANK ACCOUNTS",2,0,1,"ASSETS"),
-        ("SUNDRY DEBTORS",2,0,2,"LIABILITIES"),
-        ("SUNDRY CREDITORS",2,0,1,"ASSETS")]
+#default  head filed creations
+#xx ="SELECT * FROM master"
+xx = "SELECT acc_name FROM  master WHERE acc_name IS NOT NULL"
+c.execute(xx)
+found_record=c.fetchone()
 
-master_data = (mtext)
-mysql_insert_query = "INSERT INTO master(acc_name,level,child,group_code,group_name) VALUES (%s,%s,%s,%s,%s)"
 
-c.executemany(mysql_insert_query, master_data)
-conn.commit()
+if found_record is None:
 
-c.execute("SELECT acc_name FROM  master WHERE acc_name IS NOT NULL")
+    mtext =[("ASSETS",1,3,0,""),("LIABILITIES",1,1,0,""),("EXPENSES",1,0,0,""),("INCOME",1,0,0,""),
+            ("CASH BOOK",2,0,1,"ASSETS"),
+            ("BANK ACCOUNTS",2,0,1,"ASSETS"),
+            ("SUNDRY DEBTORS",2,0,2,"LIABILITIES"),
+            ("SUNDRY CREDITORS",2,0,1,"ASSETS")]
+
+    master_data = (mtext)
+    mysql_insert_query = "INSERT INTO master(acc_name,level,child,group_code,group_name) VALUES (%s,%s,%s,%s,%s)"
+
+    c.executemany(mysql_insert_query, master_data)
+    conn.commit()
+    c.execute("SELECT acc_name FROM  master WHERE acc_name IS NOT NULL")
 results = c.fetchall()
 my_list = results
+print("MYList")
+print(my_list)
 my_dict ={}
+print(my_dict)
 for row in results:
-    my_dict [[row][0][0]]= row
+    my_dict [ [row][0][0] ]= row
 #print(my_dict)
 
 def do_Save(*arg):
