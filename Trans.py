@@ -21,13 +21,13 @@ c1 = conn.cursor()
 c2 = conn.cursor()
 c3 = conn.cursor()
 c2.execute("CREATE TABLE IF NOT EXISTS Transanction(doc_date VARCHAR(10),doc_no INT(5),acc_code INT(5)  ,"
-          "acc_name VARCHAR(35), ledger_amount FLOAT(12,2),dr_cr VARCHAR(2)) ")
+          "acc_name VARCHAR(35),ledger_name VARCHAR(35),narration VARCHAR(50), ledger_dr_amount FLOAT(12,2), ledger_cr_amount FLOAT (12,2), voucher_type VARCHAR(5)) ")
 conn.commit()
 
 # This section for  Cash or  Bank head Selection
 options = []
 
-c.execute("SELECT acc_code,acc_name FROM  master WHERE level = 2 AND group_code =1 AND acc_name <>'Bank Accounts'")
+c.execute("SELECT acc_code,acc_name FROM  master WHERE  acc_name ='CASH BOOK'")
 display_Cash_Bank = c.fetchall() # display cash & Banks head only
 for i in display_Cash_Bank:
     options.append(str(i[1]))
@@ -48,11 +48,13 @@ mdr_cr = StringVar()
 macc_code1 =  StringVar()
 macc_name1 = StringVar()
 mdr_cr1    = StringVar()
-mledger_amount = StringVar()
+mledger_dr_amount = float()
+mledger_cr_amount = float()
+
 def lookup_Cash_Bank(event):
     global macc_code,mdr_cr,macc_name
     cash_Bank_Name = acc_name.get()
-    #query = "SELECT *FROM master"
+    print(cash_Bank_Name)
     query = "SELECT * FROM master WHERE acc_name = %s"
     c3.execute(query,(cash_Bank_Name,))
     rows = c3.fetchall()
@@ -60,7 +62,7 @@ def lookup_Cash_Bank(event):
     for i in rows:
         macc_code=i[0]
         macc_name=i[1]
-        mdr_cr = i[5]  # based master database sequence
+        mdr_cr = "CPV"  # based master database sequence
 
 #This section for select all ledger heads
 options1 = []
@@ -71,7 +73,7 @@ for i in display_Ledger:
     options1.append(str(i[0]))
 
 def lookup_ledger(event):
-    global macc_code1, mdr_cr1,macc_name1,mledger_amount
+    global macc_code1, mdr_cr1,macc_name1,mledger_cr_amount
     ledger_Name = acc_name1.get()
     c4 = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
@@ -81,7 +83,7 @@ def lookup_ledger(event):
     for i in rows:
         macc_code1 = i[0]
         macc_name1 = i[1]
-        mdr_cr1    = "Cr"
+        mdr_cr1    = "CPV"
 
 def do_Exit():
     quit()
@@ -90,20 +92,23 @@ def do_Save():
 
     mdoc_No = doc_No.get()
     mdoc_Date = doc_Date.get()
-    mledger_amount = ledger_Amount.get()
+    mledger_dr_amount = ledger_dr_Amount.get()
+    print(mledger_dr_amount)
+    mnarration = narration.get()
     # database insert with Cash book details  (first attempt)
-    master_data = (mdoc_No,mdoc_Date,macc_code,macc_name,mledger_amount,mdr_cr)
+    master_data = (mdoc_No,mdoc_Date,macc_code,macc_name,macc_name1,mledger_dr_amount,mnarration,mdr_cr)
     print(master_data)
-    mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_amount,dr_cr) VALUES(%s,%s,%s,%s,%s,%s)")
+    mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query,master_data)
     conn.commit()
-
+    """
     #dabase insert with Leadger head details (2nd attempt)
-    master_data = (mdoc_No,mdoc_Date,macc_code1,macc_name1,mledger_amount,"Cr")
+    master_data = (mdoc_No,mdoc_Date,macc_code1,macc_name1,mledger_amount,mdr_cr)
     print(master_data)
     mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_amount,dr_cr) VALUES(%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query,master_data)
     conn.commit()
+    """
     print("Record successfully insert into Transaction  table")
     do_Reset()
 
@@ -116,7 +121,7 @@ def do_Reset():
     macc_code1=""
     acc_name1.delete(0, END)
     mdr_cr1= ""
-    ledger_Amount.delete(0, END)
+    mledger_cr_amount = float()
     doc_No.focus()
 
 
@@ -148,10 +153,13 @@ label_frame1.pack(padx=5,pady=5)
 sel = tk.StringVar()
 
 acc_name1 = ttk.Combobox(label_frame1,values = options1,textvariable=sel,font=('Ariel', 14),width=39)
-acc_name1.place(y=20,x=20)
+acc_name1.place(y=5,x=20)
 acc_name1.bind('<<ComboboxSelected>>', lookup_ledger)
-ledger_Amount = Entry(label_frame1, font=('Ariel', 14),width=15,justify='right')
-ledger_Amount.place(x=475,y=20)
+ledger_dr_Amount = Entry(label_frame1, font=('Ariel', 14),width=15,justify='right')
+ledger_dr_Amount.place(x=475,y=5)
+narration = Entry(label_frame1, font=('Ariel', 14),width=59,)
+narration.place(x=20,y=45)
+
 
 
 
