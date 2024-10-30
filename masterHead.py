@@ -16,7 +16,7 @@ global mgroup_code
 conn=mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="",
+    passwd="Milann@2000",
     database='accounts')
 c=conn.cursor()
 #c.conn.cursor()
