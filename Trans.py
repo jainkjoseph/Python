@@ -1,6 +1,7 @@
 # this program to create Transaction file (Cash Payment) File in connection with accounting software
 #program started  on 30.08.24
 # tables required transaction & Master
+# password & user   root , Milan@2000
 import tkinter as tk
 
 from tkinter import *
@@ -14,7 +15,7 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="Milan@2000",
+    passwd="",
     database='accounts')
 c = conn.cursor()
 c1 = conn.cursor()
@@ -96,9 +97,9 @@ def do_Save():
     print(mledger_dr_amount)
     mnarration = narration.get()
     # database insert with Cash book details  (first attempt)
-    master_data = (mdoc_No,mdoc_Date,macc_code,macc_name,macc_name1,mledger_dr_amount,mnarration,mdr_cr)
+    master_data = (mdoc_No,mdoc_Date,macc_code,macc_name,macc_name1,mledger_cr_amount,mnarration,mdr_cr)
     print(master_data)
-    mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)")
+    mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query,master_data)
     conn.commit()
     """

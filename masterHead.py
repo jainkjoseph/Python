@@ -16,7 +16,7 @@ global mgroup_code
 conn=mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="Milan@2000",
+    passwd="",
     database='accounts')
 c=conn.cursor()
 #c.conn.cursor()
@@ -76,7 +76,7 @@ def do_Save(*arg):
        mdr_cr = dr_cr.get()
 
     master_data = (mgroup_code,mgroup_name,macc_name,mop_bal,mdr_cr,mlevel)
-    mysql_insert_query = ("INSERT INTO master(group_code,group_name,acc_name,op_bal,dr_cr,level) VALUES(%s,%s,%s,%s,%s,%s)"
+    mysql_insert_query = ("INSERT INTO master(group_code,group_name,acc_name,op_bal,dr_cr,level) VALUES(%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query,master_data)
     conn.commit()
 
