@@ -15,7 +15,7 @@ import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="",
+    passwd="Milan@2000",
     database='accounts')
 c = conn.cursor()
 c1 = conn.cursor()
@@ -28,11 +28,11 @@ conn.commit()
 # This section for  Cash or  Bank head Selection
 options = []
 
-c.execute("SELECT acc_code,acc_name FROM  master WHERE  acc_name ='CASH BOOK'")
+c.execute("SELECT acc_code,acc_name FROM  master WHERE acc_name = 'CASH BOOK' OR  group_name = '{BANK ACCOUNTS}' ")
+
 display_Cash_Bank = c.fetchall() # display cash & Banks head only
 for i in display_Cash_Bank:
     options.append(str(i[1]))
-
 
 
 master = tk.Tk()
@@ -53,17 +53,24 @@ mledger_dr_amount = float()
 mledger_cr_amount = float()
 
 def lookup_Cash_Bank(event):
-    global macc_code,mdr_cr,macc_name
+    global macc_code,mdr_cr,macc_name , mgroup_name
     cash_Bank_Name = acc_name.get()
-    print(cash_Bank_Name)
+
+    c3 = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
     c3.execute(query,(cash_Bank_Name,))
+
     rows = c3.fetchall()
 
     for i in rows:
         macc_code=i[0]
         macc_name=i[1]
-        mdr_cr = "CPV"  # based master database sequence
+        mgroup_name = i[2]
+        print(mgroup_name)
+        if mgroup_name == "{BANK ACCOUNTS}":
+            mdr_cr = "BPV"
+        else:
+            mdr_cr = "CPV"  # based master database sequence
 
 #This section for select all ledger heads
 options1 = []
@@ -72,7 +79,6 @@ c1.execute("SELECT acc_name FROM  master WHERE group_code = 3")
 display_Ledger = c1.fetchall()
 for i in display_Ledger:
     options1.append(str(i[0]))
-
 def lookup_ledger(event):
     global macc_code1, mdr_cr1,macc_name1,mledger_cr_amount
     ledger_Name = acc_name1.get()
@@ -80,7 +86,7 @@ def lookup_ledger(event):
     query = "SELECT * FROM master WHERE acc_name = %s"
     c4.execute(query, (ledger_Name,))
     rows = c4.fetchall()
-    print(rows)
+
     for i in rows:
         macc_code1 = i[0]
         macc_name1 = i[1]
@@ -94,23 +100,24 @@ def do_Save():
     mdoc_No = doc_No.get()
     mdoc_Date = doc_Date.get()
     mledger_dr_amount = ledger_dr_Amount.get()
-    print(mledger_dr_amount)
+    mledger_cr_amount = ledger_dr_Amount.get()
+
     mnarration = narration.get()
     # database insert with Cash book details  (first attempt)
-    master_data = (mdoc_No,mdoc_Date,macc_code,macc_name,macc_name1,mledger_cr_amount,mnarration,mdr_cr)
-    print(master_data)
+    master_data = (mdoc_No,mdoc_Date,macc_code,macc_name,macc_name1,mledger_dr_amount,mnarration,mdr_cr)
+
     mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query,master_data)
     conn.commit()
-    """
+
     #dabase insert with Leadger head details (2nd attempt)
-    master_data = (mdoc_No,mdoc_Date,macc_code1,macc_name1,mledger_amount,mdr_cr)
-    print(master_data)
-    mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_amount,dr_cr) VALUES(%s,%s,%s,%s,%s,%s)")
+    master_data = (mdoc_No,mdoc_Date,macc_code1,macc_name1,macc_name,mledger_dr_amount,mnarration,mdr_cr)
+ 
+    mysql_insert_query = ("INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query,master_data)
     conn.commit()
-    """
-    print("Record successfully insert into Transaction  table")
+
+    print("Record successfully insert 2nd time into Transaction  table")
     do_Reset()
 
 def do_Reset():
@@ -118,11 +125,13 @@ def do_Reset():
     doc_Date.delete(0,END)
     macc_code = ""
     acc_name.delete(0,END)
+    ledger_dr_Amount.delete(0,END)
     mdr_cr = ""
     macc_code1=""
     acc_name1.delete(0, END)
     mdr_cr1= ""
     mledger_cr_amount = float()
+    narration.delete(0,END)
     doc_No.focus()
 
 

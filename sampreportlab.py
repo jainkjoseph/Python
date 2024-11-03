@@ -18,6 +18,8 @@ c = conn.cursor()
 conn.commit()
 
 
+
+
 pdf = SimpleDocTemplate("table_example.pdf", pagesize=letter)
 c.execute("SELECT doc_date,doc_no,ledger_name,  ledger_cr_amount FROM  Transanction WHERE acc_code =5")
 data=[]
