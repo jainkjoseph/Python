@@ -91,18 +91,24 @@ def do_Save():
 
     mnarration = narration.get()
     # database insert with Cash book details  (first attempt)
-    master_data = (mdoc_No, mdoc_Date, macc_code, macc_name, macc_name1, mledger_dr_amount, mnarration, mdr_cr)
-
-    mysql_insert_query = (
-        "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)")
+    master_data = (mdoc_No, mdoc_Date, macc_code, macc_name, macc_name1,0, mledger_dr_amount, mnarration, mdr_cr)
+    print(master_data)
+    if (mdr_cr =="CPV" or mdr_cr =="BPV"):
+        mysql_insert_query = (
+            "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_dr_amount,ledger_cr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+    elif (mdr_cr =="CRV" or mdr_cr =="BRV"):
+        mysql_insert_query = (
+            "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query, master_data)
     conn.commit()
-
     # dabase insert with Leadger head details (2nd attempt)
-    master_data = (mdoc_No, mdoc_Date, macc_code1, macc_name1, macc_name, mledger_dr_amount, mnarration, mdr_cr)
-
-    mysql_insert_query = (
-        "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)")
+    master_data = (mdoc_No, mdoc_Date, macc_code1, macc_name1, macc_name, mledger_dr_amount,0, mnarration, mdr_cr)
+    if (mdr_cr =="CPV" or mdr_cr == "BPV"):
+        mysql_insert_query = (
+            "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_dr_amount,ledger_cr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+    elif (mdr_cr =="CRV" or mdr_cr == "BRV"):
+        mysql_insert_query = (
+            "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query, master_data)
     conn.commit()
 
@@ -148,6 +154,9 @@ macc_name1 = StringVar()
 mdr_cr1 = StringVar()
 mledger_dr_amount = float()
 mledger_cr_amount = float()
+mledger_dr_amount = 0.00
+mledger_cr_amount = 0.00
+
 
 # This section for select all ledger heads
 options1 = []

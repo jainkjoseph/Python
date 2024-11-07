@@ -21,7 +21,7 @@ conn.commit()
 
 
 pdf = SimpleDocTemplate("table_example.pdf", pagesize=letter)
-c.execute("SELECT doc_date,doc_no,ledger_name,  ledger_cr_amount FROM  Transanction WHERE acc_code =5")
+c.execute("SELECT doc_date,doc_no,ledger_name, ledger_dr_amount, ledger_cr_amount FROM  Transanction WHERE acc_code =5")
 data=[]
 
 
@@ -35,10 +35,11 @@ data1 = c.fetchall()  # display cashBOOK Only
 for p in data1:
     data.append(p)
 
-total_amount = sum(row[3] for row in data[1:]) #  ledger_cr_amount in4th position
-
-data.append([' ',' ','Total =',round(total_amount,2)])
-
+total_dr_amount = sum(row[3] for row in data[1:]) #  ledger_dr_amount in4th position
+total_cr_amount = sum(row[4] for row in data[1:]) #  ledger_cr_amount in5th position
+data.append("-----------")
+data.append([' ',' ','Total =',round(total_dr_amount,2) , round(total_cr_amount,2)])
+data.append("======")
 table = Table(data)
 
 elements.append(table)
