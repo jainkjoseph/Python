@@ -34,11 +34,11 @@ found_record=c.fetchone()
 
 if found_record is None:
 
-    mtext =[("ASSETS",1,3,0,""),("LIABILITIES",1,1,0,""),("EXPENSES",1,0,0,""),("INCOME",1,0,0,""),
+    mtext =[("ASSETS",1,3,0,""),("LIABILITIES",1,1,0,""),("EXPENSES",1,1,0,""),("INCOME",1,1,0,""),
             ("CASH BOOK",2,0,1,"ASSETS"),
-            ("BANK ACCOUNTS",2,0,1,"ASSETS"),
-            ("SUNDRY DEBTORS",2,0,2,"LIABILITIES"),
-            ("SUNDRY CREDITORS",2,0,1,"ASSETS")]
+            ("BANK ACCOUNTS",2,2,1,"ASSETS"),
+            ("SUNDRY DEBTORS",2,1,2,"LIABILITIES"),
+            ("SUNDRY CREDITORS",2,1,1,"ASSETS")]
 
     master_data = (mtext)
     mysql_insert_query = "INSERT INTO master(acc_name,level,child,group_code,group_name) VALUES (%s,%s,%s,%s,%s)"
@@ -75,8 +75,8 @@ def do_Save(*arg):
        mlevel = 2
        mdr_cr = dr_cr.get()
 
-    master_data = (mgroup_code,mgroup_name,macc_name,mop_bal,mdr_cr,mlevel)
-    mysql_insert_query = ("INSERT INTO master(group_code,group_name,acc_name,op_bal,dr_cr,level) VALUES(%s,%s,%s,%s,%s,%s)")
+    master_data = (mgroup_code,mgroup_name,macc_name,mop_bal,mdr_cr,mlevel,0)
+    mysql_insert_query = ("INSERT INTO master(group_code,group_name,acc_name,op_bal,dr_cr,level,child) VALUES(%s,%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query,master_data)
     conn.commit()
 

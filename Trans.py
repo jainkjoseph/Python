@@ -57,16 +57,12 @@ def lookup_Cash_Bank(event):
         macc_code = i[0]
         macc_name = i[1]
         mgroup_name = i[2]
-        """
-        print(mgroup_name)
-        if mgroup_name == "{BANK ACCOUNTS}":
-            mdr_cr = "BPV"
-        else:
-            mdr_cr = "CPV"  # based master database sequence
-        """
+
 def lookup_ledger(event):
+
     global macc_code1, mdr_cr1, macc_name1, mledger_cr_amount
     ledger_Name = acc_name1.get()
+    print(ledger_Name)
     c4 = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
     c4.execute(query, (ledger_Name,))
@@ -99,6 +95,10 @@ def do_Save():
     elif (mdr_cr =="CRV" or mdr_cr =="BRV"):
         mysql_insert_query = (
             "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+    else:
+        mysql_insert_query = (
+            "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+
     c.execute(mysql_insert_query, master_data)
     conn.commit()
     # dabase insert with Leadger head details (2nd attempt)
@@ -109,6 +109,10 @@ def do_Save():
     elif (mdr_cr =="CRV" or mdr_cr == "BRV"):
         mysql_insert_query = (
             "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+    else:
+        mysql_insert_query = (
+            "INSERT INTO transanction(doc_no,doc_date,acc_code,acc_name,ledger_name,ledger_cr_amount,ledger_dr_amount,narration,voucher_type) VALUES(%s,%s,%s,%s,%s,%s,%s,%s,%s)")
+
     c.execute(mysql_insert_query, master_data)
     conn.commit()
 
@@ -161,7 +165,9 @@ mledger_cr_amount = 0.00
 # This section for select all ledger heads
 options1 = []
 c1 = conn.cursor()
-c1.execute("SELECT acc_name FROM  master WHERE group_code = 3")
+
+#c1.execute("SELECT acc_name FROM  master WHERE group_code = 3")
+c1.execute("SELECT acc_name FROM  master WHERE child = 0")
 display_Ledger = c1.fetchall()
 for i in display_Ledger:
     options1.append(str(i[0]))

@@ -1,4 +1,5 @@
-# this program to create Transaction file (Cash Payment) File in connection with accounting software
+# This for report generation through calling module ReportLedger.py
+# report based on head selection
 #program started  on 30.08.24
 # tables required transaction & Master
 # password & user   root , Milan@2000
@@ -14,6 +15,7 @@ import mysql.connector
 
 from datetime import date
 
+from ReportLedger import *
 
 conn = mysql.connector.connect(
     host='localhost',
@@ -25,16 +27,14 @@ c1 = conn.cursor()
 c2 = conn.cursor()
 c3 = conn.cursor()
 
-
 # This section for  Cash or  Bank head Selection
 options = []
-
-c.execute("SELECT acc_code,acc_name FROM  master WHERE acc_name = 'CASH BOOK' OR  group_name = '{BANK ACCOUNTS}' ")
+#c.execute("SELECT acc_code,acc_name FROM  master WHERE acc_name = 'CASH BOOK' OR  group_name = '{BANK ACCOUNTS}' ")
+c.execute("SELECT acc_code,acc_name FROM  master")
 
 display_Cash_Bank = c.fetchall() # display cash & Banks head only
 for i in display_Cash_Bank:
     options.append(str(i[1]))
-
 
 master = tk.Tk()
 master.geometry("550x250")
@@ -43,9 +43,8 @@ master.title("Home Expenses", )
 macc_code =  StringVar()
 macc_name = StringVar()
 def lookup_Cash_Bank(event):
-    global macc_code,mdr_cr,macc_name
+    global macc_name,macc_code
     cash_Bank_Name = acc_name.get()
-
     c3 = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
     c3.execute(query,(cash_Bank_Name,))
@@ -57,7 +56,9 @@ def lookup_Cash_Bank(event):
         macc_name=i[1]
 
 def do_print():
-    pass
+    #print(macc_code)
+    ReportLedger(macc_code,macc_name)
+   # pass
 
 
 def do_Exit():
@@ -75,6 +76,11 @@ label_frame0.pack(padx=5,pady=5)
 Label(label_frame0, text="Cash/Bank", font=('Ariel', 14),foreground='Blue').place(x=25, y=20)
 acc_name = ttk.Combobox(label_frame0,values=options,textvariable=sel1,font=('Ariel', 14),width=25)
 (acc_name.place(y=20,x=130))
+""" place without next line; bind showing nontype error
+"""
+
+acc_name.bind('<<ComboboxSelected>>', lookup_Cash_Bank)
+
 Label(label_frame0, text="period", font=('Ariel', 14),foreground='Blue').place(x=25, y=60)
 today= date.today()
 doc_Date1 = today.strftime("%d/%m/%Y")
@@ -84,9 +90,7 @@ doc_Date1 = Entry(label_frame0, font=('Ariel', 14),width=10)
 doc_Date1.place(x=130,y=60)
 doc_Date2 = Entry(label_frame0, font=('Ariel', 14),width=10)
 doc_Date2.place(x=300,y=60)
-""" place without next line; bind showing nontype error
-"""
-acc_name.bind('<<ComboboxSelected>>', lookup_Cash_Bank)
+
 
 label_frame2 = tk.LabelFrame(master, height=80,width=700,labelanchor='n' )
 label_frame2.pack(padx=5,pady=5)
