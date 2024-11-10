@@ -16,7 +16,7 @@ global mgroup_code
 conn=mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="Milan@2000",
+    passwd="",
     database='accounts')
 c=conn.cursor()
 #c.conn.cursor()
@@ -79,6 +79,22 @@ def do_Save(*arg):
     mysql_insert_query = ("INSERT INTO master(group_code,group_name,acc_name,op_bal,dr_cr,level,child) VALUES(%s,%s,%s,%s,%s,%s,%s)")
     c.execute(mysql_insert_query,master_data)
     conn.commit()
+    """ master head child field updation display acc_code based on group_code count row the
+        update child field + rowcount
+    """
+    c5 = conn.cursor()
+    query = "SELECT * FROM master WHERE acc_code = %s"
+
+    c5.execute(query, (mgroup_code,))
+    rows = c5.fetchall()
+
+    for i in rows:
+        tlevel = i[7]
+    xlevel= tlevel+1
+    print(xlevel)
+   """
+    update level field
+   """
 
     print("Record successfully insert into Master table")
     do_Reset()
