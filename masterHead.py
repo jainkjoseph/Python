@@ -1,5 +1,5 @@
 # this program to create Master File in connection with accounting software
-#program finished on 30.08.24
+#program finished on 30.08.24   , password = "Milan@2000"
 # column 3rd level * child fields not finished
 #before running this program install mysql and database name is accounts  and table is master
 
@@ -16,7 +16,7 @@ global mgroup_code
 conn=mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="",
+    passwd="Milan@2000",
     database='accounts')
 c=conn.cursor()
 #c.conn.cursor()
@@ -87,15 +87,16 @@ def do_Save(*arg):
 
     c5.execute(query, (mgroup_code,))
     rows = c5.fetchall()
-
+    print(rows)
     for i in rows:
         tlevel = i[7]
     xlevel= tlevel+1
-    print(xlevel)
-   """
-    update level field
-   """
 
+    query = "update master set child = %s WHERE acc_code = %s"
+
+    c5.execute(query,(xlevel,mgroup_code,))
+    conn.commit()
+    
     print("Record successfully insert into Master table")
     do_Reset()
 
