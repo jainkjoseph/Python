@@ -12,32 +12,36 @@ from tkinter import ttk
 from tkinter import Tk, mainloop
 from tkinter.ttk import Label, LabelFrame
 import mysql.connector
-
+global results
 global mgroup_code
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="",
+    passwd="Milan@2000",
     database='accounts')
 c = conn.cursor()
-# c.conn.cursor()
 
 c.execute("CREATE TABLE IF NOT EXISTS Master(acc_code INT(5) NOT NULL AUTO_INCREMENT PRIMARY KEY ,"
           "acc_name VARCHAR(35),group_name VARCHAR(35),group_code INT(5), op_bal FLOAT(12,2),dr_cr VARCHAR(2), "
           "level INT(2), child INT(1) ) ")
+
 conn.commit()
-# default  head filed creations
-# xx ="SELECT * FROM master"
-xx = "SELECT acc_name FROM  master WHERE acc_name IS NOT NULL"
-c.execute(xx)
+c.execute( "SELECT acc_name FROM  master WHERE acc_name IS NOT NULL")
 found_record = c.fetchone()
-#for voucher type selection
+
+
+
+"""
 if found_record is None:
     mtext = [("ASSETS", 1, 3, 0, ""), ("LIABILITIES", 1, 1, 0, ""), ("EXPENSES", 1, 1, 0, ""), ("INCOME", 1, 1, 0, ""),
              ("CASH BOOK", 2, 0, 1, "ASSETS"),
              ("BANK ACCOUNTS", 2, 2, 1, "ASSETS"),
              ("SUNDRY DEBTORS", 2, 1, 2, "LIABILITIES"),
              ("SUNDRY CREDITORS", 2, 1, 1, "ASSETS")]
+"""
+if found_record is None:
+
+    mtext = [("-select Group",0,0,0,""),("ASSETS", 1, 3, 0, ""), ("LIABILITIES", 1, 1, 0, ""), ("EXPENSES", 1, 1, 0, ""), ("INCOME", 1, 1, 0, "")]
 
     master_data = (mtext)
     mysql_insert_query = "INSERT INTO master(acc_name,level,child,group_code,group_name) VALUES (%s,%s,%s,%s,%s)"
@@ -45,13 +49,23 @@ if found_record is None:
     c.executemany(mysql_insert_query, master_data)
     conn.commit()
     c.execute("SELECT acc_name FROM  master WHERE acc_name IS NOT NULL")
-results = c.fetchall()
-my_list = results
-my_dict = {}
+    results = c.fetchall()
+    my_list = results
+    my_dict = {}
+    for row in results:
+        my_dict[[row][0][0]] = row
+        print(my_dict)
 
-for row in results:
-    my_dict[[row][0][0]] = row
 
+else:
+
+    results = c.fetchall()
+    print(results)
+    my_list = results
+    my_dict = {}
+    for row in results:
+        my_dict[[row][0][0]] = row
+        print(my_dict)
 
 def do_Save(*arg):
     tlevel = 0.00
@@ -62,8 +76,12 @@ def do_Save(*arg):
     conn.commit()
     print("Master table successfully created")
     macc_name = acc_name.get()
-    mgroup_name = group_name.get()
+    #mgroup_name = group_name.get()
+    tgroup_name = group_name.get()
 
+    x = len(tgroup_name)
+    mgroup_name = (tgroup_name[1:(x - 1)])
+    print(mgroup_name)
     mop_bal = opn_bal.get()
     if mop_bal == "":
         mop_bal = float()
@@ -114,46 +132,31 @@ def do_Reset():
 
 def my_upd(*args):
     global mgroup_code,mgroup_name
-    mgroup_name = group_name.get()
-    print(mgroup_name)
-    c = conn.cursor()
 
-    #query = "SELECT acc_name FROM  master WHERE acc_name = %s"
+    tgroup_name = group_name.get()
+
+    x = len(tgroup_name)
+    mgroup_name = (tgroup_name[1:(x-1)])
+    c = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
-    my_data = c.execute(query,(mgroup_name,))
+    c.execute(query,(mgroup_name,))
     results = c.fetchall()
-    print("result")
-    print(results)
     my_list = results
     for row in results:
-        if row[1] == sel.get():
-            mgroup_code = row[0]
-            print(mgroup_code)
+        mgroup_code = row[0]
+        mgroup_name = row[1]
 
-"""
-def lookup_Cash_Bank(event):
-    global macc_code, macc_name, mgroup_name
-    cash_Bank_Name = acc_name.get()
 
-    c3 = conn.cursor()
-    query = "SELECT * FROM master WHERE acc_name = %s"
-    c3.execute(query, (cash_Bank_Name,))
-
-    rows = c3.fetchall()
-
-    for i in rows:
-        macc_code = i[0]
-        macc_name = i[1]
-        mgroup_name = i[2]
-"""
 master = tk.Tk()
 master.geometry("650x150")
 tk.Label(master, text="Account Name", font=('Ariel', 14)).grid(row=0)
 tk.Label(master, text="Group Name", font=('Ariel', 14)).grid(row=1)
 tk.Label(master, text="Opening Bal", font=('Ariel', 14)).grid(row=2)
+
 frame1 = Frame(master)
 frame1.grid()
 mgroup_code = 0
+
 box_value = tk.StringVar()
 sel = tk.StringVar()
 acc_name = tk.Entry(master, width=30, font=('Ariel', 14))
@@ -174,5 +177,6 @@ b3 = tk.Button(frame1, text='QUIT', font=('Ariel', 14), command=lambda: do_Exit(
 b1.grid(row=6, column=0)
 b2.grid(row=6, column=1)
 b3.grid(row=6, column=2)
+
 
 master.mainloop()
