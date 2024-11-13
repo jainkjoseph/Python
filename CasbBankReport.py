@@ -11,12 +11,11 @@ from tkinter import ttk
 
 from tkinter.ttk import Label, LabelFrame
 
-import mysql.connector
-
 from datetime import date
 
 from ReportLedger import *
 
+import mysql.connector
 conn = mysql.connector.connect(
     host='localhost',
     user='root',

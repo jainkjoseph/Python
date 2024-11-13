@@ -136,7 +136,7 @@ def do_Reset():
 
     # This section for  Cash or  Bank head Selection
 options = []
-c.execute("SELECT acc_code,acc_name FROM  master WHERE acc_name = 'CASH BOOK' OR  group_name = '{BANK ACCOUNTS}' ")
+c.execute("SELECT acc_code,acc_name FROM  master WHERE acc_name = 'CASH BOOK' OR  group_name = 'BANK ACCOUNTS' ")
 display_Cash_Bank = c.fetchall()  # display cash & Banks head only
 for i in display_Cash_Bank:
     options.append(str(i[1]))

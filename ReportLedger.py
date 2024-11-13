@@ -24,7 +24,8 @@ def ReportLedger(macc_code,head):
     #c.execute("SELECT doc_date,doc_no,ledger_name, ledger_dr_amount, ledger_cr_amount FROM  Transanction WHERE acc_code =macc_code")
     query =("SELECT doc_date,doc_no,ledger_name, ledger_dr_amount, ledger_cr_amount FROM  Transanction WHERE acc_code "
             "= %s")
-    print(query)
+
+
     c.execute(query,(tcode,))
 
 

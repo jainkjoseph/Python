@@ -12,12 +12,13 @@ from tkinter import ttk
 from tkinter import Tk, mainloop
 from tkinter.ttk import Label, LabelFrame
 import mysql.connector
+
 global results
 global mgroup_code
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="",
+    passwd="Milan@2000",
     database='accounts')
 c = conn.cursor()
 
@@ -26,22 +27,13 @@ c.execute("CREATE TABLE IF NOT EXISTS Master(acc_code INT(5) NOT NULL AUTO_INCRE
           "level INT(2), child INT(1) ) ")
 
 conn.commit()
-c.execute( "SELECT acc_name FROM  master WHERE acc_name IS NOT NULL")
+c.execute("SELECT acc_name FROM  master WHERE acc_name IS NOT NULL")
 found_record = c.fetchone()
 
-
-
-"""
-if found_record is None:
-    mtext = [("ASSETS", 1, 3, 0, ""), ("LIABILITIES", 1, 1, 0, ""), ("EXPENSES", 1, 1, 0, ""), ("INCOME", 1, 1, 0, ""),
-             ("CASH BOOK", 2, 0, 1, "ASSETS"),
-             ("BANK ACCOUNTS", 2, 2, 1, "ASSETS"),
-             ("SUNDRY DEBTORS", 2, 1, 2, "LIABILITIES"),
-             ("SUNDRY CREDITORS", 2, 1, 1, "ASSETS")]
-"""
 if found_record is None:
 
-    mtext = [("-select Group",0,0,0,""),("ASSETS", 1, 3, 0, ""), ("LIABILITIES", 1, 1, 0, ""), ("EXPENSES", 1, 1, 0, ""), ("INCOME", 1, 1, 0, "")]
+    mtext = [("-select Group", 0, 0, 0, ""), ("ASSETS", 0, 0, 0, ""), ("LIABILITIES", 0, 0, 0, ""),
+             ("EXPENSES", 0,0 , 0, ""), ("INCOME", 0, 0, 0, "")]
 
     master_data = (mtext)
     mysql_insert_query = "INSERT INTO master(acc_name,level,child,group_code,group_name) VALUES (%s,%s,%s,%s,%s)"
@@ -60,7 +52,7 @@ if found_record is None:
 else:
 
     results = c.fetchall()
-    print(results)
+
     my_list = results
     my_dict = {}
     for row in results:
@@ -76,7 +68,7 @@ def do_Save(*arg):
     conn.commit()
     print("Master table successfully created")
     macc_name = acc_name.get()
-    #mgroup_name = group_name.get()
+    # mgroup_name = group_name.get()
     tgroup_name = group_name.get()
     x = len(tgroup_name)
 
@@ -122,6 +114,7 @@ def do_Save(*arg):
     print("Record successfully insert into Master table")
     do_Reset()
 
+
 def do_Exit():
     quit()
 
@@ -135,13 +128,12 @@ def do_Reset():
 
 
 def my_upd(*args):
-    global mgroup_code,mgroup_name
+    global mgroup_code, mgroup_name
 
     tgroup_name = group_name.get()
 
     x = len(tgroup_name)
 
- 
     if tgroup_name[0:1] == "{":
         mgroup_name = (tgroup_name[1:(x - 1)])
 
@@ -150,7 +142,7 @@ def my_upd(*args):
 
     c = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
-    c.execute(query,(mgroup_name,))
+    c.execute(query, (mgroup_name,))
     results = c.fetchall()
     my_list = results
     for row in results:
@@ -180,7 +172,7 @@ opn_bal.grid(row=2, column=1)
 dr_cr = ttk.Combobox(master, textvariable=box_value, values=["Dr", "Cr"], width=10, font=('Ariel', 14))
 dr_cr.grid(row=2, column=2)
 
-#obj = Master(acc_name,group_name,mgroup_code,opn_bal,dr_cr)
+# obj = Master(acc_name,group_name,mgroup_code,opn_bal,dr_cr)
 b1 = tk.Button(frame1, text='OK', font=('Ariel', 14), command=do_Save)
 b2 = tk.Button(frame1, text='RESET', font=('Ariel', 14), command=lambda: do_Reset())
 b3 = tk.Button(frame1, text='QUIT', font=('Ariel', 14), command=lambda: do_Exit())
@@ -188,6 +180,5 @@ b3 = tk.Button(frame1, text='QUIT', font=('Ariel', 14), command=lambda: do_Exit(
 b1.grid(row=6, column=0)
 b2.grid(row=6, column=1)
 b3.grid(row=6, column=2)
-
 
 master.mainloop()
