@@ -7,10 +7,11 @@ from reportlab.platypus import SimpleDocTemplate, Table,TableStyle
 
 import mysql.connector
 
-def ReportLedger(macc_code,head):
+def ReportLedger(macc_code,head,mop_bal):
     tcode = macc_code
     thead = head
-    print(tcode)
+    top_bal = mop_bal
+    print(top_bal)
 
     conn = mysql.connector.connect(
         host='localhost',
@@ -31,10 +32,10 @@ def ReportLedger(macc_code,head):
 
     data=[]
     elements = []
-
-
+  #  titles1 = ['Date','Voucher No.','Description','Amount','Amount','Balance']
+  #  data.append(titles1)
   
-    print(data)
+
     titles = ['Date','Voucher No.','Description','Amount','Amount','Balance']
 
     data.append(titles)
@@ -43,7 +44,7 @@ def ReportLedger(macc_code,head):
     for p in data1:
         data.append(p)
 
-    total_dr_amount = sum(row[3] for row in data[1:]) #  ledger_dr_amount in4th position
+    total_dr_amount = mop_bal+ sum(row[3] for row in data[1:]) #  ledger_dr_amount in4th position
     total_cr_amount = sum(row[4] for row in data[1:]) #  ledger_cr_amount in5th position
     data.append([' ',' ',' ',"-----------","----------"])
     data.append([' ',' ','Total =',round(total_dr_amount,2) , round(total_cr_amount,2), round(total_dr_amount-total_cr_amount,2)])

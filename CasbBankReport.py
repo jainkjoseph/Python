@@ -29,7 +29,7 @@ c3 = conn.cursor()
 # This section for  Cash or  Bank head Selection
 options = []
 #c.execute("SELECT acc_code,acc_name FROM  master WHERE acc_name = 'CASH BOOK' OR  group_name = '{BANK ACCOUNTS}' ")
-c.execute("SELECT acc_code,acc_name FROM  master")
+c.execute("SELECT acc_code,acc_name , op_bal FROM  master")
 
 display_Cash_Bank = c.fetchall() # display cash & Banks head only
 for i in display_Cash_Bank:
@@ -41,22 +41,25 @@ master.title("Home Expenses", )
 # This varibles for Cash/Bank master file storing
 macc_code =  StringVar()
 macc_name = StringVar()
+mop_bal = StringVar()
 def lookup_Cash_Bank(event):
-    global macc_name,macc_code
+    global macc_name,macc_code,mop_bal
     cash_Bank_Name = acc_name.get()
     c3 = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
     c3.execute(query,(cash_Bank_Name,))
 
     rows = c3.fetchall()
-
+    print(rows)
     for i in rows:
         macc_code=i[0]
         macc_name=i[1]
+        mop_bal=i[4]
+
 
 def do_print():
-    #print(macc_code)
-    ReportLedger(macc_code,macc_name)
+    print(mop_bal)
+    ReportLedger(macc_code,macc_name,mop_bal)
    # pass
 
 
@@ -83,7 +86,7 @@ acc_name.bind('<<ComboboxSelected>>', lookup_Cash_Bank)
 Label(label_frame0, text="period", font=('Ariel', 14),foreground='Blue').place(x=25, y=60)
 today= date.today()
 doc_Date1 = today.strftime("%d/%m/%Y")
-print(doc_Date1)
+
 doc_Date2 = date.today()
 doc_Date1 = Entry(label_frame0, font=('Ariel', 14),width=10)
 doc_Date1.place(x=130,y=60)
