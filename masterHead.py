@@ -17,7 +17,7 @@ global mgroup_code
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="Milan@2000",
+    passwd="",
     database='accounts')
 c = conn.cursor()
 
@@ -54,7 +54,7 @@ if found_record is None:
     my_dict = {}
     for row in results:
         my_dict[[row][0][0]] = row
-        print(my_dict)
+
 
 
 else:
@@ -65,7 +65,7 @@ else:
     my_dict = {}
     for row in results:
         my_dict[[row][0][0]] = row
-        print(my_dict)
+
 
 def do_Save(*arg):
     tlevel = 0.00
@@ -78,10 +78,14 @@ def do_Save(*arg):
     macc_name = acc_name.get()
     #mgroup_name = group_name.get()
     tgroup_name = group_name.get()
-
     x = len(tgroup_name)
-    mgroup_name = (tgroup_name[1:(x - 1)])
-    print(mgroup_name)
+
+    if tgroup_name[0:1] == "{":
+        mgroup_name = (tgroup_name[1:(x - 1)])
+
+    else:
+        mgroup_name = tgroup_name
+
     mop_bal = opn_bal.get()
     if mop_bal == "":
         mop_bal = float()
@@ -136,7 +140,14 @@ def my_upd(*args):
     tgroup_name = group_name.get()
 
     x = len(tgroup_name)
-    mgroup_name = (tgroup_name[1:(x-1)])
+
+ 
+    if tgroup_name[0:1] == "{":
+        mgroup_name = (tgroup_name[1:(x - 1)])
+
+    else:
+        mgroup_name = tgroup_name
+
     c = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
     c.execute(query,(mgroup_name,))
