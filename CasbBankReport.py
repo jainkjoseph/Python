@@ -3,6 +3,7 @@
 #program started  on 30.08.24
 # tables required transaction & Master
 # password & user   root , Milan@2000
+from tkinter import Tk
 import tkinter as tk
 
 from tkinter import *
@@ -11,15 +12,21 @@ from tkinter import ttk
 
 from tkinter.ttk import Label, LabelFrame
 
+from tkcalendar import Calendar, DateEntry
+
+
+import mysql.connector
+
 from datetime import date
 
 from ReportLedger import *
 
-import mysql.connector
+
+
 conn = mysql.connector.connect(
     host='localhost',
     user='root',
-    passwd="Milan@2000",
+    passwd="",
     database='accounts')
 c = conn.cursor()
 c1 = conn.cursor()
@@ -29,7 +36,7 @@ c3 = conn.cursor()
 # This section for  Cash or  Bank head Selection
 options = []
 #c.execute("SELECT acc_code,acc_name FROM  master WHERE acc_name = 'CASH BOOK' OR  group_name = '{BANK ACCOUNTS}' ")
-c.execute("SELECT acc_code,acc_name , op_bal FROM  master")
+c.execute("SELECT acc_code,acc_name FROM  master")
 
 display_Cash_Bank = c.fetchall() # display cash & Banks head only
 for i in display_Cash_Bank:
@@ -41,25 +48,23 @@ master.title("Home Expenses", )
 # This varibles for Cash/Bank master file storing
 macc_code =  StringVar()
 macc_name = StringVar()
-mop_bal = StringVar()
+
 def lookup_Cash_Bank(event):
-    global macc_name,macc_code,mop_bal
+    global macc_name,macc_code
     cash_Bank_Name = acc_name.get()
     c3 = conn.cursor()
     query = "SELECT * FROM master WHERE acc_name = %s"
     c3.execute(query,(cash_Bank_Name,))
 
     rows = c3.fetchall()
-    print(rows)
+
     for i in rows:
         macc_code=i[0]
         macc_name=i[1]
-        mop_bal=i[4]
-
 
 def do_print():
-    print(mop_bal)
-    ReportLedger(macc_code,macc_name,mop_bal)
+    #print(macc_code)
+    ReportLedger(macc_code,macc_name)
    # pass
 
 
@@ -88,9 +93,10 @@ today= date.today()
 doc_Date1 = today.strftime("%d/%m/%Y")
 
 doc_Date2 = date.today()
-doc_Date1 = Entry(label_frame0, font=('Ariel', 14),width=10)
+
+doc_Date1 = DateEntry(label_frame0, font=('Ariel', 14),width=10)
 doc_Date1.place(x=130,y=60)
-doc_Date2 = Entry(label_frame0, font=('Ariel', 14),width=10)
+doc_Date2 = DateEntry(label_frame0, font=('Ariel', 14),width=10)
 doc_Date2.place(x=300,y=60)
 
 
