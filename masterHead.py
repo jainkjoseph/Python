@@ -33,7 +33,7 @@ found_record = c.fetchone()
 if found_record is None:
 
     mtext = [("-select Group", 0, 0, 0, ""), ("ASSETS", 0, 0, 0, ""), ("LIABILITIES", 0, 0, 0, ""),
-             ("EXPENSES", 0,0 , 0, ""), ("INCOME", 0, 0, 0, "")]
+             ("EXPENSES", 0, 0, 0, ""), ("INCOME", 0, 0, 0, "")]
 
     master_data = (mtext)
     mysql_insert_query = "INSERT INTO master(acc_name,level,child,group_code,group_name) VALUES (%s,%s,%s,%s,%s)"
@@ -67,9 +67,8 @@ def do_Save(*arg):
               "level INT(2), child INT(1) ) ")
     conn.commit()
     print("Master table successfully created")
-    macc_name = acc_name.get()
-    # mgroup_name = group_name.get()
-    tgroup_name = group_name.get()
+    macc_name = master1.acc_name.get()
+    tgroup_name = master1.group_name.get()
     x = len(tgroup_name)
 
     if tgroup_name[0:1] == "{":
@@ -78,7 +77,7 @@ def do_Save(*arg):
     else:
         mgroup_name = tgroup_name
 
-    mop_bal = opn_bal.get()
+    mop_bal = master1.opn_bal.get()
     if mop_bal == "":
         mop_bal = float()
         mdr_cr = 0
@@ -87,7 +86,7 @@ def do_Save(*arg):
     else:
 
         mlevel = 2
-        mdr_cr = dr_cr.get()
+        mdr_cr = master1.dr_cr.get()
     # head creation write to file
 
     master_data = (mgroup_code, mgroup_name, macc_name, mop_bal, mdr_cr, mlevel, 0)
@@ -120,17 +119,17 @@ def do_Exit():
 
 
 def do_Reset():
-    acc_name.delete(0, END)
-    group_name.delete(0, END)
-    opn_bal.delete(0, END)
-    dr_cr.delete(0, END)
-    acc_name.focus()
+    master1.acc_name.delete(0, END)
+    master1.group_name.delete(0, END)
+    master1.opn_bal.delete(0, END)
+    master1.dr_cr.delete(0, END)
+    master1.acc_name.focus()
 
 
-def my_upd(*args):
+def my_upd(event):
     global mgroup_code, mgroup_name
 
-    tgroup_name = group_name.get()
+    tgroup_name = master1.group_name.get()
 
     x = len(tgroup_name)
 
@@ -150,35 +149,38 @@ def my_upd(*args):
         mgroup_name = row[1]
 
 
-master = tk.Tk()
-master.geometry("650x150")
-tk.Label(master, text="Account Name", font=('Ariel', 14)).grid(row=0)
-tk.Label(master, text="Group Name", font=('Ariel', 14)).grid(row=1)
-tk.Label(master, text="Opening Bal", font=('Ariel', 14)).grid(row=2)
+def master_head1():
+    global master1
+    master1 = tk.Tk()
+    master1.geometry("650x150")
+    tk.Label(master1, text="Account Name", font=('Ariel', 14)).grid(row=0)
+    tk.Label(master1, text="Group Name", font=('Ariel', 14)).grid(row=1)
+    tk.Label(master1, text="Opening Bal", font=('Ariel', 14)).grid(row=2)
+    frame1 = Frame(master1)
+    frame1.grid()
+    master1.mgroup_code = 0
+    box_value = tk.StringVar()
+    sel = tk.StringVar()
+    master1.acc_name = tk.Entry(master1, width=30, font=('Ariel', 14))
+    master1.acc_name.grid(row=0, column=1)
+    master1.group_name = ttk.Combobox(master1, values=my_list, textvariable=sel)
+    master1.group_name.grid(row=1, column=1)
+    master1.group_name.bind('<<ComboboxSelected>>', my_upd)
+    master1.opn_bal = tk.Entry(master1, width=12, font=('Ariel', 14), justify=RIGHT)
+    master1.opn_bal.grid(row=2, column=1)
+    master1.dr_cr = ttk.Combobox(master1, textvariable=box_value, values=["Dr", "Cr"], width=10, font=('Ariel', 14))
+    master1.dr_cr.grid(row=2, column=2)
 
-frame1 = Frame(master)
-frame1.grid()
-mgroup_code = 0
+    # obj = Master(acc_name,group_name,mgroup_code,opn_bal,dr_cr)
+    b1 = tk.Button(frame1, text='OK', font=('Ariel', 14), command=do_Save)
+    b2 = tk.Button(frame1, text='RESET', font=('Ariel', 14), command=lambda: do_Reset())
+    b3 = tk.Button(frame1, text='QUIT', font=('Ariel', 14), command=lambda: do_Exit())
 
-box_value = tk.StringVar()
-sel = tk.StringVar()
-acc_name = tk.Entry(master, width=30, font=('Ariel', 14))
-acc_name.grid(row=0, column=1)
-group_name = ttk.Combobox(master, values=my_list, textvariable=sel)
-group_name.grid(row=1, column=1)
-group_name.bind('<<ComboboxSelected>>', my_upd)
-opn_bal = tk.Entry(master, width=12, font=('Ariel', 14), justify=RIGHT)
-opn_bal.grid(row=2, column=1)
-dr_cr = ttk.Combobox(master, textvariable=box_value, values=["Dr", "Cr"], width=10, font=('Ariel', 14))
-dr_cr.grid(row=2, column=2)
+    b1.grid(row=6, column=0)
+    b2.grid(row=6, column=1)
+    b3.grid(row=6, column=2)
+    master1.mainloop()
 
-# obj = Master(acc_name,group_name,mgroup_code,opn_bal,dr_cr)
-b1 = tk.Button(frame1, text='OK', font=('Ariel', 14), command=do_Save)
-b2 = tk.Button(frame1, text='RESET', font=('Ariel', 14), command=lambda: do_Reset())
-b3 = tk.Button(frame1, text='QUIT', font=('Ariel', 14), command=lambda: do_Exit())
 
-b1.grid(row=6, column=0)
-b2.grid(row=6, column=1)
-b3.grid(row=6, column=2)
-
-master.mainloop()
+if __name__ == "__main__":
+    master_head1()
