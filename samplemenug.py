@@ -9,7 +9,14 @@ import tkinter as tk
 
 from tkinter import Menu
 
-import CasbBankReport
+import casbbankreport
+
+from casbbankreport import ledger_report
+
+
+def ledger_report1():
+    casbbankreport.ledger_report()
+
 
 root = tk.Tk()
 root.geometry('1000x650')
@@ -32,7 +39,7 @@ file_menu.add_separator()
 # add Exit menu item
 file_menu.add_command(
     label='Exit',
-    command=root.destroy
+
 )
 
 # add the File menu to the menubar
@@ -46,7 +53,7 @@ help_menu = Menu(
     tearoff=0
 )
 
-help_menu.add_command(label='Ledgers', command=CasbBankReport)
+help_menu.add_command(label='Ledgers', command=ledger_report1)
 help_menu.add_command(label='About...')
 
 # add the Help menu to the menubar
